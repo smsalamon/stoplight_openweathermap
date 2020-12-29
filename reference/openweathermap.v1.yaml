@@ -19,17 +19,12 @@ servers:
   - url: 'https://api.openweathermap.org/data/2.5'
     description: prod
 paths:
-  '/users/{userId}':
-    parameters:
-      - schema:
-          type: integer
-        name: userId
-        in: path
-        required: true
-        description: Id of an existing user.
+  weather:
+    parameters: []
     get:
       summary: Get User Info by User ID
-      tags: []
+      tags:
+        - current weather endpoints
       responses:
         '200':
           description: User Found
@@ -49,60 +44,26 @@ paths:
                     signUpDate: '2019-08-24'
         '404':
           description: User Not Found
-      operationId: get-users-userId
-      description: Retrieve the information of the user with the matching user ID.
-    patch:
-      summary: Update User Information
-      operationId: patch-users-userId
-      responses:
-        '200':
-          description: User Updated
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-              examples:
-                Updated User Rebecca Baker:
-                  value:
-                    id: 13
-                    firstName: Rebecca
-                    lastName: Baker
-                    email: rebecca@gmail.com
-                    dateOfBirth: '1985-10-02'
-                    emailVerified: false
-                    createDate: '2019-08-24'
-        '404':
-          description: User Not Found
-        '409':
-          description: Email Already Taken
-      description: Update the infromation of an existing user.
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                firstName:
-                  type: string
-                lastName:
-                  type: string
-                email:
-                  type: string
-                  description: 'If a new email is given, the user''s email verified property will be set to false.'
-                dateOfBirth:
-                  type: string
-            examples:
-              Update First Name:
-                value:
-                  firstName: Rebecca
-              Update Email:
-                value:
-                  email: rebecca@gmail.com
-              Update Last Name & Date of Birth:
-                value:
-                  lastName: Baker
-                  dateOfBirth: '1985-10-02'
-        description: Patch user properties to update.
+      operationId: get-weather-by-city
+      description: 'You can call by city name or city name, state code and country code. Please note that searching by states available only for the USA locations.'
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: q
+          description: 'City name, state code and country code divided by comma, use ISO 3166 country codes.<br/> You can specify the parameter not only in English. In this case, the API response should be returned in the same language as the language of requested location name if the location is in our predefined list of more than 200,000 locations.'
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: appid
+          description: 'Your unique API key (you can always find it on your account page under the ["API key" tab](https://home.openweathermap.org/api_keys))'
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: mode
+          description: 'Response format. Possible values are `xml` and `html`. If you don''t use the `mode` parameter format is JSON by default. [Learn more](https://openweathermap.org/current#format)'
   /user:
     post:
       summary: Create New User
@@ -205,3 +166,7 @@ components:
       name: appid
       type: apiKey
       in: query
+tags:
+  - name: current weather endpoints
+security:
+  - app_id: []
